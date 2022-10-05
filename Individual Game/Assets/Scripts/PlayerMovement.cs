@@ -43,14 +43,14 @@ public class PlayerMovement : MonoBehaviour
             extraJumps = extraJumpsValue;
         }
 
-        if (Input.GetButtonDown("Jump") && extraJumps > 0)
+        if (Input.GetButtonDown("Jump") && IsGrounded())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+        else if (Input.GetButtonDown("Jump") && extraJumps > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             extraJumps--;
-        }
-        else if (Input.GetButtonDown("Jump") && extraJumps == 0 && IsGrounded())
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
 
