@@ -17,6 +17,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public int extraJumpsValue;
     private int extraJumps;
 
+    [SerializeField] private bool dashAvail;
+    [SerializeField] private float dashSpeed = 14f;
+    [SerializeField] private float dashTime = 0.5f;
+    private Vector2 dashDir;
+    private bool isDashing;
+    private bool canDash = true;
+
     private enum MovementState { idle, running, jumping, falling };
 
     [SerializeField] private AudioSource jumpSoundEffect;
@@ -52,6 +59,47 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             extraJumps--;
         }
+
+        if (dashAvail)
+        {
+            Dashing();
+        }
+    }
+
+    private void Dashing()
+    {
+        
+         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+         {
+            isDashing = true;
+            canDash = false;
+            dashDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            if (dashDir == Vector2.zero)
+            {
+                dashDir = new Vector2(transform.localScale.x, 0);
+            }
+
+            StartCoroutine(StopDashing());
+         }
+        
+
+        if (isDashing)
+        {
+            rb.velocity = dashDir.normalized * dashSpeed;
+            return;
+        }
+
+        if (IsGrounded())
+        {
+            canDash = true;
+        }
+    }
+
+    private IEnumerator StopDashing()
+    {
+        yield return new WaitForSeconds(dashTime);
+        isDashing = false;
+        rb.velocity = Vector2.zero;
     }
 
     private void UpdateAnimationState()
