@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -16,17 +17,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 14f;
     [SerializeField] public int extraJumpsValue;
     private int extraJumps;
+    private bool isFacingRight = true;
 
     [SerializeField] private bool dashAvail;
-    [SerializeField] private float dashSpeed = 14f;
-    [SerializeField] private float dashTime = 0.5f;
-    private Vector2 dashDir;
+    [SerializeField] private float dashSpeed = 25f;
+    [SerializeField] private float dashTime = 0.2f;
     private bool isDashing;
     private bool canDash = true;
+    private float dashCooldown = 0.2f;
 
     private enum MovementState { idle, running, jumping, falling };
-
-    [SerializeField] private AudioSource jumpSoundEffect;
 
     private void Start()
     {
@@ -39,6 +39,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (isDashing)
+        {
+            return;
+        }
+
         dirX = Input.GetAxisRaw("Horizontal");
 
         rb.velocity = new Vector2(moveSpeed * dirX, rb.velocity.y);
@@ -60,61 +65,53 @@ public class PlayerMovement : MonoBehaviour
             extraJumps--;
         }
 
-        if (dashAvail)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvail && canDash)
         {
-            Dashing();
+            StartCoroutine(Dash());
+        }
+
+        Flip();
+    }
+
+    private void Flip()
+    {
+        if (isFacingRight && dirX < 0f || !isFacingRight && dirX > 0f)
+        {
+            Vector3 localScale = transform.localScale;
+            isFacingRight = !isFacingRight;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
         }
     }
 
-    private void Dashing()
+    private IEnumerator Dash()
     {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * dashSpeed, 0f);
         
-         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
-         {
-            isDashing = true;
-            canDash = false;
-            dashDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (dashDir == Vector2.zero)
-            {
-                dashDir = new Vector2(transform.localScale.x, 0);
-            }
-
-            StartCoroutine(StopDashing());
-         }
-        
-
-        if (isDashing)
-        {
-            rb.velocity = dashDir.normalized * dashSpeed;
-            return;
-        }
-
-        if (IsGrounded())
-        {
-            canDash = true;
-        }
-    }
-
-    private IEnumerator StopDashing()
-    {
         yield return new WaitForSeconds(dashTime);
+        rb.gravityScale = originalGravity;
         isDashing = false;
-        rb.velocity = Vector2.zero;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     private void UpdateAnimationState()
     {
         MovementState state;
 
+        Vector3 localScale = transform.localScale;
+
         if (dirX > 0f)
         {
             state = MovementState.running;
-            sprite.flipX = false;
         }
         else if (dirX < 0f)
         {
             state = MovementState.running;
-            sprite.flipX = true;
         }
         else
         {
