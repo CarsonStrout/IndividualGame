@@ -9,7 +9,7 @@ public class WaypointFollower : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    [SerializeField] private float speed = 4f;
+    [SerializeField] private float speed = 4f; // can change the speed of each individual moving platform
 
     private void Start()
     {
@@ -18,6 +18,7 @@ public class WaypointFollower : MonoBehaviour
 
     private void Update()
     {
+        // changes the next waypoint when one is connected with
         if (Vector2.Distance(waypoints[currentWaypointIndex].transform.position, transform.position) < 0.1f)
         {
             currentWaypointIndex++;
@@ -27,11 +28,11 @@ public class WaypointFollower : MonoBehaviour
             }
         }
         
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftControl)) // stops the platforms when left shift is held
         {
             rb.velocity = Vector2.zero;
         }
-        else
+        else // causes the moving platform to move back and forth between selected "waypoints"
         {
             transform.position = Vector2.MoveTowards(transform.position, waypoints[currentWaypointIndex].transform.position, Time.deltaTime * speed);
         }

@@ -15,15 +15,19 @@ public class PlayerMovement : MonoBehaviour
     private float dirX = 0f;
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 14f;
-    [SerializeField] public int extraJumpsValue;
-    private int extraJumps;
     private bool isFacingRight = true;
 
+    // when extraJumpsValue is above 1, we can double jump
+    [SerializeField] public int extraJumpsValue;
+    private int extraJumps;
+
+    // variables for dashing
     [SerializeField] private bool dashAvail;
     [SerializeField] private float dashSpeed = 25f;
     [SerializeField] private float dashTime = 0.2f;
     private bool isDashing;
     private bool canDash = true;
+    private bool dashReset = true;
     private float dashCooldown = 0.2f;
 
     private enum MovementState { idle, running, jumping, falling };
@@ -39,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (isDashing)
+        if (isDashing) // if we are dashing, we don't want to override it with other movement code
         {
             return;
         }
@@ -52,17 +56,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (IsGrounded())
         {
-            extraJumps = extraJumpsValue;
+            extraJumps = extraJumpsValue; // resets the double jump when player hits the ground
         }
 
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
-        else if (Input.GetButtonDown("Jump") && extraJumps > 0)
+        else if (Input.GetButtonDown("Jump") && extraJumps > 0) // allows the player to jump however many extra times we set it
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             extraJumps--;
+        }
+
+        if (dashReset && IsGrounded())
+        {
+            canDash = true;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvail && canDash)
@@ -73,6 +82,10 @@ public class PlayerMovement : MonoBehaviour
         Flip();
     }
 
+    /*
+     * flips the player sprite according to which direction we should be facing
+     * using the localScale to make the default dash direction work correctly
+     */
     private void Flip()
     {
         if (isFacingRight && dirX < 0f || !isFacingRight && dirX > 0f)
@@ -87,18 +100,24 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator Dash()
     {
         canDash = false;
+        dashReset = false;
         isDashing = true;
         float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
+        rb.gravityScale = 0f; // makes the dash in a straight line, rather than falling
         rb.velocity = new Vector2(transform.localScale.x * dashSpeed, 0f);
         
+        // gives a cooldown before resetting to the usual gravity
         yield return new WaitForSeconds(dashTime);
         rb.gravityScale = originalGravity;
         isDashing = false;
+        // cooldown until we can dash again
         yield return new WaitForSeconds(dashCooldown);
-        canDash = true;
+        dashReset = true;
     }
 
+    /*
+     * uses the MovementState enum to update player animations
+     */
     private void UpdateAnimationState()
     {
         MovementState state;
@@ -130,6 +149,9 @@ public class PlayerMovement : MonoBehaviour
         anim.SetInteger("state", (int)state);
     }
 
+    /*
+     * ground check
+     */
     private bool IsGrounded()
     {
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);

@@ -8,7 +8,7 @@ public class CoinCollect : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (ScoreCounter.coinAmount < 10)
+        if (ScoreCounter.coinAmount < ScoreCounter.coinCheck)
         {
             ScoreCounter.coinAmount += 1; // increases number of coins collected
             platformManagerScript.NewPlatform(); // calls method to move collectible to next spot

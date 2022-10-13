@@ -16,7 +16,7 @@ public class PlatformManager : MonoBehaviour
     {
         NewPlatform();
     }
-    // Start is called before the first frame update
+
     public void NewPlatform()
     {
         platforms = GameObject.FindGameObjectsWithTag("Platform"); // Creates an array of all objects with the tag platform
