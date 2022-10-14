@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public ParticleSystem dust;
+
     private Rigidbody2D rb;
     private BoxCollider2D coll;
     private SpriteRenderer sprite;
@@ -61,10 +63,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
+            CreateDust();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
         else if (Input.GetButtonDown("Jump") && extraJumps > 0) // allows the player to jump however many extra times we set it
         {
+            CreateDust();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             extraJumps--;
         }
@@ -76,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvail && canDash)
         {
+            CreateDust();
             StartCoroutine(Dash());
         }
 
@@ -90,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isFacingRight && dirX < 0f || !isFacingRight && dirX > 0f)
         {
+            CreateDust();
             Vector3 localScale = transform.localScale;
             isFacingRight = !isFacingRight;
             localScale.x *= -1f;
@@ -147,6 +153,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         anim.SetInteger("state", (int)state);
+    }
+
+    void CreateDust()
+    {
+        dust.Play();
     }
 
     /*
