@@ -21,7 +21,7 @@ public class PlatformManager : MonoBehaviour
     {
         platforms = GameObject.FindGameObjectsWithTag("Platform"); // Creates an array of all objects with the tag platform
         currentPlatform = platforms[index]; // registers random platform as the one the player must get to
-        if (index < 11)
+        if (index < platforms.Length)
         {
             index++;
             coin.transform.position = new Vector2(currentPlatform.transform.position.x, currentPlatform.transform.position.y); // moves to next platform

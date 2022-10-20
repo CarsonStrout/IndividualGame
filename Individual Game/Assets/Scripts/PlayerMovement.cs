@@ -128,8 +128,6 @@ public class PlayerMovement : MonoBehaviour
     {
         MovementState state;
 
-        Vector3 localScale = transform.localScale;
-
         if (dirX > 0f)
         {
             state = MovementState.running;

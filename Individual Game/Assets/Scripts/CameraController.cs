@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
         }
         else if (horizontal && !vertical)
         {
-            transform.position = new Vector3(player.position.x + 2f, transform.position.y, transform.position.z); // camera follows player on the x-axis, but stays the same on y-axis
+            transform.position = new Vector3(player.position.x + 6f, transform.position.y, transform.position.z); // camera follows player on the x-axis, but stays the same on y-axis
         }
         else if (horizontal && vertical)
         {
