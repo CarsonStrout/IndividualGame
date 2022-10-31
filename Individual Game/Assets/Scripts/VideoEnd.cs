@@ -8,6 +8,7 @@ public class VideoEnd : MonoBehaviour
 {
     public VideoPlayer VideoPlayer;
     public string SceneName;
+    public LevelLoader levelLoader;
 
     void Start()
     {
@@ -16,6 +17,6 @@ public class VideoEnd : MonoBehaviour
 
     void LoadScene(VideoPlayer vp)
     {
-        SceneManager.LoadScene(SceneName);
+        levelLoader.LoadNextLevel();
     }
 }

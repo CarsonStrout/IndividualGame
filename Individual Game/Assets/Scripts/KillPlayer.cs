@@ -5,13 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class KillPlayer : MonoBehaviour
 {
-    public int Respawn;
+    public LevelLoader levelLoader;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            SceneManager.LoadScene(Respawn);
+            levelLoader.LoadNextLevel();
         }
     }
 }
