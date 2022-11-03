@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask jumpableGround;
 
+    [SerializeField] private float maxSpeed = 25f;
+
     private float dirX = 0f;
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 14f;
@@ -53,6 +55,11 @@ public class PlayerMovement : MonoBehaviour
         dirX = Input.GetAxisRaw("Horizontal");
 
         rb.velocity = new Vector2(moveSpeed * dirX, rb.velocity.y);
+
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxSpeed);
+        }
 
         UpdateAnimationState();
 

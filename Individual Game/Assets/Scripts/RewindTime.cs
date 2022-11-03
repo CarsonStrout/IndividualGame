@@ -11,9 +11,12 @@ public class RewindTime : MonoBehaviour
 
     public float recordTime = 5f;
 
+    public GameObject rewindUI;
+
     void Start()
     {
         positions = new List<Vector3>();
+        rewindUI.SetActive(false);
     }
 
     void Update()
@@ -25,6 +28,7 @@ public class RewindTime : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Q))
         {
             StopRewind();
+            rewindUI.SetActive(false);
         }
     }
 
@@ -46,10 +50,12 @@ public class RewindTime : MonoBehaviour
         {
             transform.position = positions[0];
             positions.RemoveAt(0);
+            rewindUI.SetActive(true);
         }
         else
         {
             StopRewind();
+            rewindUI.SetActive(false);
         }
     }
 
