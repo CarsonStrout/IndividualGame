@@ -1,4 +1,4 @@
-# IndividualGame
+# Shadow Adventure
 A 2D platformer project that focuses on learning different mechanics, how to use them to create levels around those mechanics, and post-processing.
 
 
